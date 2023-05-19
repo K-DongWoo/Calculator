@@ -64,12 +64,50 @@ class Calculator:
         if x == 1:      # n이 1일 때
             return 1    # 1을 반환하고 재귀호출을 끝냄
         return x * cal.factorial(x - 1)
+    
+    def fabs(self, x):    #절대값
+        return math.fabs(x)
+    
+    
+    def deter(self, n):   # 행렬식
+        l = []
+        
+        print('한 행씩 입력!!(예: 1 2)')
+
+        for i in range(n):
+            a = list(map(int, input().split()))
+            l.append(a)
+
+        if n == 2:
+            return (l[0][0]*l[1][1]) - (l[0][1]*l[1][0])
+
+        #else:
+            # 3차 행렬식
+           
+     def calculate_regression_line(self, x_values, y_values):
+    n = len(x_values)
+    if n != len(y_values):
+        raise ValueError("x값의 수와 y값의 수는 같아야 합니다.")
+    
+    # x, y, x^2, xy의 합을 계산합니다.
+    sum_x = sum(x_values)
+    sum_y = sum(y_values)
+    sum_x_squared = sum(x ** 2 for x in x_values)
+    sum_xy = sum(x * y for x, y in zip(x_values, y_values))
+
+    # 기울기 (m)와 y절편 (b)을 계산합니다.
+    slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x_squared - sum_x ** 2)
+    y_intercept = (sum_y - slope * sum_x) / n
+    #coefficients = np.polyfit(x_values, y_values, 1)
+    #p = np.poly1d(coefficients)
+    return slope, y_intercept
+
 
 
 cal = Calculator()
 print("계산 가능한 연산 목록")
 print("더하기(+)   빼기(−)   곱하기(×)   나누기(÷)   제곱(**)  나머지(%)  제곱근(√)  분산 표준편차 시간계산(h:m:s)  지수(e)")  
-print("사인(sin)  코사인(cos)  탄젠트(tan)  역사인(asin)  코사인(acos)  탄젠트(atan)")
+print("사인(sin)  코사인(cos)  탄젠트(tan)  역사인(asin)  코사인(acos)  탄젠트(atan)  행렬식(det)")
 
 
 
@@ -259,8 +297,56 @@ while True:
         print("숫자를 입력하세요")
         num1 = float(input(" "))
         print(num1, "!", "=", cal.factorial(num1))
+        
+    elif choice == '절대값' or choice == 'fabs':
+        while True: 
+            try:
+                num = float(input("숫자>>"))
+                break
+            except ValueError:
+                print("숫자를 입력하세요")
+        print('fabs', num, "=", cal.fabs(num))
+        
+        
+    elif choice == '행렬식' or choice == 'det':
+        while True:
+            try:
+                n = int(input('행렬의 차원 입력 : '))
+                break
+            
+            except ValueError:
+                print("숫자를 입력하세요")
+                continue
+        
+        print(cal.deter(n))
+    
+    elif choice == '회귀직선':
+        while True:
+        try:
+            input_data = input("y값을 입력하세요(구분자: 공백 또는 쉼표)>> ")
+            y_values = [float(y) for y in input_data.replace(",", " ").split()]
+            if len(y_values) != len(x_values):
+                print("x값의 수와 y값의 수가 같아야 합니다")
+                continue
+            else:
+                break
+        except ValueError:
+            print("숫자를 입력하세요")
+            continue
+    slope, y_intercept = cal.calculate_regression_line(x_values, y_values)
+    print("기울기:",slope)
+    print("y 절편:",y_intercept )
+    print("회귀직선: y의 예측값 =",y_intercept ,"+", slope, "x")
+    regression_line = np.poly1d([slope, y_intercept])
 
-
+    plt.scatter(x_values, y_values)  # 데이터 산점도 그래프
+    plt.plot(x_values, regression_line(x_values), "r")  # 회귀직선 그래프
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Regression Line")
+    plt.show()
+        
+        
     elif choice == '종료':
         print("사용종료")
         break
